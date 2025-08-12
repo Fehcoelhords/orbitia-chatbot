@@ -1,0 +1,15 @@
+# Pasta do ambiente virtual do Python
+venv/
+
+# Arquivos de cache do Python
+__pycache__/
+*.pyc
+
+# Arquivos de configuração do VS Code
+.vscode/
+
+# Arquivo com variáveis de ambiente (contém a chave da API do Gemini)
+.env
+
+# Arquivo de credenciais do Google (a "senha" do robô)
+credentials.json

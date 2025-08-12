@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orbit IA - Salão de Beleza</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #dc3545; /* Vermelho Bootstrap */
+        --primary-darker: #b82838;
+        --secondary-color: #f8f9fa; /* Cinza claro Bootstrap */
+        --chat-bg-color: #ffffff;
+        --chat-user-bg: var(--primary-color);
+        --chat-bot-bg: #f9dcdc; /* Tom de vermelho mais claro para o bot */
+        --text-color-primary: #ffffff;
+        --text-color-secondary: #333;
+      }
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: var(--secondary-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="%23fde0e0"><path fill-rule="evenodd" d="M12 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM8 9a4 4 0 1 0 8 0 4 4 0 0 0-8 0zM5 8a3 3 0 1 0 6 0 3 3 0 0 0-6 0zM15 12a3 3 0 1 0 6 0 3 3 0 0 0-6 0z" clip-rule="evenodd" /><path fill-rule="evenodd" d="M10 14a5 5 0 1 0 10 0 5 5 0 0 0-10 0zM1 12a4 4 0 1 0 8 0 4 4 0 0 0-8 0zM17 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" clip-rule="evenodd" /></svg>');
+      }
+      .chat-card {
+        width: 100%;
+        max-width: 450px;
+        height: 80vh;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background-color: var(--chat-bg-color);
+      }
+      .card-header {
+        background-color: var(--primary-color);
+        color: var(--text-color-primary);
+        padding: 20px;
+        font-size: 1.6em;
+        font-weight: 600;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 2px solid var(--primary-darker);
+      }
+      .card-header i {
+        margin-right: 10px;
+        font-size: 1.2em;
+        animation: pulse 2s infinite alternate;
+      }
+      .chat-box {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        scroll-behavior: smooth;
+      }
+      .chat-message {
+        max-width: 85%;
+        padding: 12px 18px;
+        border-radius: 25px;
+        line-height: 1.4;
+        word-wrap: break-word;
+        animation: fadeIn 0.4s ease-in-out;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
+      .chat-message.user {
+        background-color: var(--chat-user-bg);
+        color: var(--text-color-primary);
+        align-self: flex-end;
+        border-bottom-right-radius: 5px;
+      }
+      .chat-message.bot {
+        background-color: var(--chat-bot-bg);
+        color: var(--text-color-secondary);
+        align-self: flex-start;
+        border-bottom-left-radius: 5px;
+        border: 1px solid var(--primary-color);
+      }
+      .chat-input {
+        display: flex;
+        padding: 15px;
+        border-top: 2px solid var(--primary-darker);
+        background-color: var(--secondary-color);
+      }
+      .chat-input .form-control {
+        border-radius: 30px;
+        padding: 12px 20px;
+        font-size: 1em;
+        border-color: var(--primary-color);
+        transition: all 0.3s;
+      }
+      .chat-input .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+        border-color: var(--primary-darker);
+      }
+      .chat-input .btn-send {
+        background-color: var(--primary-color);
+        border: none;
+        color: var(--text-color-primary);
+        border-radius: 30px;
+        padding: 12px 25px;
+        font-weight: 600;
+        transition: all 0.3s;
+        margin-left: 10px;
+      }
+      .chat-input .btn-send:hover {
+        background-color: var(--primary-darker);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .typing-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        height: 20px;
+        align-self: flex-start;
+        margin-bottom: 15px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        animation: fadeIn 0.4s ease-in-out;
+      }
+      .typing-indicator.active {
+        opacity: 1;
+      }
+      .typing-indicator .dot {
+        width: 10px;
+        height: 10px;
+        background-color: var(--primary-color);
+        border-radius: 50%;
+        margin: 0 6px;
+        animation: bounce 1.4s infinite ease-in-out both;
+      }
+      .typing-indicator .dot:nth-child(1) {
+        animation-delay: -0.32s;
+      }
+      .typing-indicator .dot:nth-child(2) {
+        animation-delay: -0.16s;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes bounce {
+        0%,
+        80%,
+        100% {
+          transform: scale(0);
+        }
+        40% {
+          transform: scale(1);
+        }
+      }
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        100% {
+          transform: scale(1.1);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-card card">
+      <div class="card-header">
+        <i class="fas fa-cut"></i> Orbit IA - Beleza Total
+      </div>
+      <div class="card-body chat-box" id="chat-box">
+        <div class="chat-message bot">
+          Olá! Seja bem-vindo(a) ao Salão de Beleza Total. Como posso te ajudar
+          hoje? Posso te ajudar a agendar um horário ou informar sobre nossos
+          serviços.
+        </div>
+      </div>
+      <div class="card-footer chat-input">
+        <input
+          type="text"
+          class="form-control"
+          id="user-input"
+          placeholder="Digite sua mensagem..."
+        />
+        <button class="btn btn-send" onclick="sendMessage()">Enviar</button>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Gera um ID de sessão único para cada vez que a página é carregada
+      const sessionId =
+        Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15);
+
+      async function sendMessage() {
+        const userInput = document.getElementById("user-input");
+        const chatBox = document.getElementById("chat-box");
+        const message = userInput.value.trim();
+
+        if (message === "") return;
+
+        const userMessageDiv = document.createElement("div");
+        userMessageDiv.className = "chat-message user animated fadeInUp";
+        userMessageDiv.innerText = message;
+        chatBox.appendChild(userMessageDiv);
+        userInput.value = "";
+        chatBox.scrollTop = chatBox.scrollHeight;
+        userInput.disabled = true;
+
+        const typingIndicator = document.createElement("div");
+        typingIndicator.className = "typing-indicator active";
+        typingIndicator.innerHTML =
+          '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+        chatBox.appendChild(typingIndicator);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+          const response = await fetch("/send_message", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: message, session_id: sessionId }), // Adicionamos o session_id aqui
+          });
+
+          const data = await response.json();
+          const botResponse = data.response;
+
+          typingIndicator.remove();
+
+          const botMessageDiv = document.createElement("div");
+          botMessageDiv.className = "chat-message bot animated fadeInUp";
+          botMessageDiv.innerText = botResponse;
+          chatBox.appendChild(botMessageDiv);
+          chatBox.scrollTop = chatBox.scrollHeight;
+          userInput.disabled = false;
+        } catch (error) {
+          console.error("Erro ao comunicar com o servidor:", error);
+          typingIndicator.remove();
+
+          const errorMessageDiv = document.createElement("div");
+          errorMessageDiv.className = "chat-message bot animated fadeInUp";
+          errorMessageDiv.innerText =
+            "Desculpe, ocorreu um erro na comunicação.";
+          chatBox.appendChild(errorMessageDiv);
+          chatBox.scrollTop = chatBox.scrollHeight;
+          userInput.disabled = false;
+        }
+      }
+
+      document
+        .getElementById("user-input")
+        .addEventListener("keydown", function (event) {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            sendMessage();
+          }
+        });
+    </script>
+  </body>
+</html>
